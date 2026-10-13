@@ -73,3 +73,13 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.softtabstop = 2
   end,
 })
+
+-- Entering a terminal window starts Terminal-mode, so typing just works.
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = augroup,
+  pattern = "term://*",
+  callback = function()
+    vim.cmd("startinsert")
+  end,
+  desc = "Entering a terminal starts Terminal-mode",
+})

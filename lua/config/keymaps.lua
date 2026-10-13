@@ -25,6 +25,13 @@ vim.keymap.set("n", "<C-Down>", "<CMD>resize -2<CR>", { desc = "Decrease window 
 vim.keymap.set("n", "<C-Left>", "<CMD>vertical resize -2<CR>", { desc = "Decrease window width" })
 vim.keymap.set("n", "<C-Right>", "<CMD>vertical resize +2<CR>", { desc = "Increase window width" })
 
+-- Window navigation. <C-w> is forwarded to the shell in terminal-mode,
+-- so Alt is used instead (see :h terminal-input).
+for _, dir in ipairs({ "h", "j", "k", "l" }) do
+  vim.keymap.set("n", "<A-" .. dir .. ">", "<C-w>" .. dir, { desc = "Move to window " .. dir })
+  vim.keymap.set("t", "<A-" .. dir .. ">", "<C-\\><C-N><C-w>" .. dir, { silent = true, desc = "Move to window " .. dir })
+end
+
 -- Better indenting
 vim.keymap.set("v", "<", "<gv", { desc = "Indent left and reselect" })
 vim.keymap.set("v", ">", ">gv", { desc = "Indent right and reselect" })
@@ -130,10 +137,14 @@ vim.keymap.set("n", "<leader>cp", function()
   vim.keymap.set("n", "q", "<CMD>close<CR>", { buffer = 0, silent = true })
 end, { desc = "Run checkpatch on file" })
 
--- Terminal toggle
+-- Terminal toggle. Opens focused (Terminal-mode) and reuses the shell.
 local term_buf, term_win
-vim.keymap.set("n", "<leader>tt", function()
+local function toggle_terminal()
   if term_win and vim.api.nvim_win_is_valid(term_win) then
+    if #vim.api.nvim_list_wins() == 1 then
+      vim.notify("Cannot close the last window", vim.log.levels.WARN)
+      return
+    end
     vim.api.nvim_win_close(term_win, true)
     term_win = nil
     return
@@ -142,13 +153,19 @@ vim.keymap.set("n", "<leader>tt", function()
   term_win = vim.api.nvim_get_current_win()
   if term_buf and vim.api.nvim_buf_is_valid(term_buf) and vim.bo[term_buf].buftype == "terminal" then
     vim.api.nvim_win_set_buf(term_win, term_buf)
-    vim.cmd("stopinsert")
   else
     vim.cmd("terminal")
     term_buf = vim.api.nvim_get_current_buf()
-    vim.cmd("stopinsert")
   end
-  vim.cmd("wincmd p")
-end, { desc = "Toggle terminal" })
+  vim.cmd("startinsert")
+end
 
+vim.keymap.set("n", "<A-t>", toggle_terminal, { desc = "Toggle terminal" })
+vim.keymap.set("n", "<leader>tt", toggle_terminal, { desc = "Toggle terminal" })
 vim.keymap.set("n", "<leader>th", "<CMD>botright 12split | terminal<CR>", { desc = "New terminal" })
+
+-- Toggle the terminal from inside it (shell is kept for reuse).
+vim.keymap.set("t", "<A-t>", function()
+  vim.cmd("stopinsert")
+  toggle_terminal()
+end, { silent = true, desc = "Toggle terminal" })
