@@ -20,5 +20,9 @@ require("conform").setup({
     clang_format = {
       prepend_args = { "--style=Linux" },
     },
+    stylua = {
+      -- This forces StyLua to use 2 spaces, perfectly matching your autocmd
+      prepend_args = { "--indent-type", "Spaces", "--indent-width", "2" },
+    },
   },
 })

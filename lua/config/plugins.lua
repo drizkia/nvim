@@ -7,7 +7,7 @@ vim.pack.add({
   { src = "https://github.com/neovim/nvim-lspconfig" },
 
   -- Omarchy Theme Plugins
-  { src = "https://github.com/bjarneo/aether.nvim",                        version = "v3" },
+  { src = "https://github.com/bjarneo/aether.nvim", version = "v3" },
   { src = "https://github.com/folke/tokyonight.nvim" },
   { src = "https://github.com/catppuccin/nvim" },
   { src = "https://github.com/rose-pine/neovim" },
@@ -41,7 +41,8 @@ vim.pack.add({
   { src = "https://github.com/nvim-lualine/lualine.nvim" },
   { src = "https://github.com/folke/trouble.nvim" },
   { src = "https://github.com/nvim-tree/nvim-web-devicons" },
-  { src = "https://github.com/nvim-neo-tree/neo-tree.nvim",                version = "v3.x" },
+  { src = "https://github.com/nvim-neo-tree/neo-tree.nvim", version = "v3.x" },
+  { src = "https://github.com/mikavilpas/yazi.nvim" },
   { src = "https://github.com/MunifTanjim/nui.nvim" },
   { src = "https://github.com/mrcjkb/rustaceanvim" },
   { src = "https://github.com/mfussenegger/nvim-dap" },
@@ -58,7 +59,6 @@ vim.pack.add({
   { src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
   { src = "https://github.com/akinsho/bufferline.nvim" },
 })
-
 
 -- Plugin Setup
 local ok_oil, oil = pcall(require, "oil")
