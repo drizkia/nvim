@@ -29,7 +29,12 @@ vim.keymap.set("n", "<C-Right>", "<CMD>vertical resize +2<CR>", { desc = "Increa
 -- so Alt is used instead (see :h terminal-input).
 for _, dir in ipairs({ "h", "j", "k", "l" }) do
   vim.keymap.set("n", "<A-" .. dir .. ">", "<C-w>" .. dir, { desc = "Move to window " .. dir })
-  vim.keymap.set("t", "<A-" .. dir .. ">", "<C-\\><C-N><C-w>" .. dir, { silent = true, desc = "Move to window " .. dir })
+  vim.keymap.set(
+    "t",
+    "<A-" .. dir .. ">",
+    "<C-\\><C-N><C-w>" .. dir,
+    { silent = true, desc = "Move to window " .. dir }
+  )
 end
 
 -- Better indenting

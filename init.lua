@@ -1,5 +1,5 @@
 -- Optional: Disable default spacebar behavior in normal/visual mode
-vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
 -- Set leader key before anything else
 vim.g.mapleader = " "
@@ -21,6 +21,7 @@ require("config.lualine")
 require("config.trouble")
 require("config.whichkey")
 require("config.neotree")
+require("config.yazi")
 require("config.surround")
 require("config.comment")
 require("config.autopairs")
