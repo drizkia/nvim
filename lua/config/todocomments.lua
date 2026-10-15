@@ -33,5 +33,9 @@ vim.keymap.set("n", "[t", function()
 end, { desc = "Previous todo comment" })
 
 vim.keymap.set("n", "<leader>xt", "<CMD>Trouble todo<CR>", { desc = "Todo (Trouble)" })
-vim.keymap.set("n", "<leader>xT", '<CMD>Trouble todo filter = {tag = {TODO,FIX,FIXME}}<CR>',
-  { desc = "Todo/Fix/Fixme (Trouble)" })
+vim.keymap.set(
+  "n",
+  "<leader>xT",
+  "<CMD>Trouble todo filter = {tag = {TODO,FIX,FIXME}}<CR>",
+  { desc = "Todo/Fix/Fixme (Trouble)" }
+)

@@ -53,8 +53,34 @@ vim.keymap.set("n", "<ESC>", "<CMD>noh<CR>", { desc = "Clear search highlights" 
 -- Save file
 vim.keymap.set("n", "<leader>w", "<CMD>write<CR>", { desc = "Save file" })
 
--- Quit
-vim.keymap.set("n", "<leader>q", "<CMD>quit<CR>", { desc = "Quit" })
+-- Real (non-floating) windows. ui2/which-key/gitsigns/cmp floats are
+-- excluded, since one transient popup would otherwise flap the count.
+local function real_win_count()
+  local n = 0
+  for _, w in ipairs(vim.api.nvim_list_wins()) do
+    local c = vim.api.nvim_win_get_config(w)
+    if c.relative == nil or c.relative == "" then
+      n = n + 1
+    end
+  end
+  return n
+end
+
+local function quit_guard()
+  if real_win_count() > 1 then
+    vim.cmd("quit")
+    return
+  end
+  local n = #vim.fn.getbufinfo({ buflisted = 1 })
+  if n > 1 then
+    vim.notify(string.format("Not quitting: %d buffers open (<leader>Q to exit)", n), vim.log.levels.WARN)
+    return
+  end
+  vim.cmd("quit")
+end
+
+vim.keymap.set("n", "<leader>q", quit_guard, { desc = "Quit" })
+vim.keymap.set("n", "<leader>Q", "<CMD>quitall<CR>", { desc = "Force quit" })
 
 -- Format
 vim.keymap.set("n", "<leader>cf", "<CMD>Conform<CR>", { desc = "Format file" })
