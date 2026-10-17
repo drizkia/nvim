@@ -13,5 +13,6 @@ require("which-key").setup({
     { "<leader>b", group = "Buffer" },
     { "<leader>d", group = "Debug" },
     { "<leader>t", group = "Terminal" },
+    { "<leader>S", group = "Session" },
   },
 })

@@ -170,7 +170,36 @@ end, { desc = "Run checkpatch on file" })
 
 -- Terminal toggle. Opens focused (Terminal-mode) and reuses the shell.
 local term_buf, term_win
+
+-- A session restore recreates the terminal buffer WITHOUT starting the job
+-- (TermOpen never fires for it), so the locals above are nil afterwards.
+-- Adopt the restored shell instead of spawning a duplicate.
+-- A session-restored terminal may still have buftype "" and no job until it
+-- is first entered (the shell starts lazily), so also match the term:// name.
+local function is_terminal_buf(b)
+  return vim.bo[b].buftype == "terminal" or vim.fn.bufname(b):find("^term://") ~= nil
+end
+
+local function adopt_restored_terminal()
+  for _, w in ipairs(vim.api.nvim_list_wins()) do
+    local b = vim.api.nvim_win_get_buf(w)
+    if vim.api.nvim_win_get_config(w).relative == "" and is_terminal_buf(b) then
+      term_buf, term_win = b, w
+      return
+    end
+  end
+  for _, b in ipairs(vim.api.nvim_list_bufs()) do
+    if is_terminal_buf(b) then
+      term_buf = b
+      return
+    end
+  end
+end
+
 local function toggle_terminal()
+  if not (term_buf and vim.api.nvim_buf_is_valid(term_buf) and is_terminal_buf(term_buf)) then
+    adopt_restored_terminal()
+  end
   if term_win and vim.api.nvim_win_is_valid(term_win) then
     if #vim.api.nvim_list_wins() == 1 then
       vim.notify("Cannot close the last window", vim.log.levels.WARN)
@@ -185,6 +214,11 @@ local function toggle_terminal()
   if term_buf and vim.api.nvim_buf_is_valid(term_buf) and vim.bo[term_buf].buftype == "terminal" then
     vim.api.nvim_win_set_buf(term_win, term_buf)
   else
+    -- A restored "terminal" that never started (buftype "") is dead weight:
+    -- wipe it so dead term:// buffers cannot pile up across quit/reopen.
+    if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+      pcall(vim.api.nvim_buf_delete, term_buf, { force = true })
+    end
     vim.cmd("terminal")
     term_buf = vim.api.nvim_get_current_buf()
   end
